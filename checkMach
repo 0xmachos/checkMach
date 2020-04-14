@@ -1,0 +1,100 @@
+#!/usr/bin/env zsh
+# checkMach/checkMach
+
+# checkMach
+# Check the security properties of Mach-O executables
+declare -r CHECKMACH_VERSION="v0.1.0"
+
+set -euo pipefail
+# -e exit if any command returns non-zero status code
+# -u prevent using undefined variables
+# -o pipefail force pipelines to fail on first non-zero status code
+
+IFS=$'\n\t'
+# Set Internal Field Separator to newlines and tabs
+# This makes bash consider newlines and tabs as separating words
+# See: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+
+
+### Define Colours ###
+
+tput sgr0; 
+# reset colors
+
+readonly RESET=$(tput sgr0);
+readonly BOLD=$(tput bold);
+
+readonly RED=$(tput setaf 1);
+
+### END Colours ###
+
+
+function usage {
+
+  echo -e "\\nCheck the security properties of a Mach-O executable\\n"
+  echo -e "  Usage: ./checkMach /path/to/macho/binary\\n"
+
+  exit 0
+}
+
+
+### Utility Functions ###
+# macos_compatability_check
+# check_developer_tools
+
+
+function macos_compatability_check {
+  
+  local os
+  os="$(uname -s)"
+
+  if [[ "${os}" != "Darwin" ]]; then 
+    echo "[❌] This script was written for macOS"
+    exit 1
+  fi
+}
+
+
+function check_developer_tools {
+
+  if ! xcode-select -p >/dev/null 2>&1; then 
+    echo "[❌] Command line developer tools required"
+    echo "[🍺] Install via: xcode-select --install"
+    exit 1
+  fi
+}
+
+### END UTILITY FUNCTIONS ###
+
+
+function check_aslr {
+
+  if /usr/bin/otool -hv "${1}" | grep -q 'PIE'; then
+    echo "ASLR/ PIE: ✅"
+  else
+    echo "ASLR/ PIE: ❌"
+  fi
+}
+
+
+############################ 
+
+
+function main {
+
+  macos_compatability_check
+  # Check the system is running macOS 
+
+  declare -r arg=${1:-"usage"}
+
+  trap ctrl_c SIGINT
+  # Detect and react to the user hitting CTRL + C
+
+  if [[ "${arg}" == "usage" ]]; then
+    usage
+  fi
+
+  check_aslr "${arg}"
+}
+
+main "$@"
