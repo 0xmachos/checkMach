@@ -15,19 +15,13 @@ IFS=$'\n\t'
 # This makes bash consider newlines and tabs as separating words
 # See: http://redsymbol.net/articles/unofficial-bash-strict-mode/
 
-
 ### Define Colours ###
-
 tput sgr0; 
 # reset colors
-
 readonly RESET=$(tput sgr0);
 readonly BOLD=$(tput bold);
-
 readonly RED=$(tput setaf 1);
-
 ### END Colours ###
-
 
 function usage {
 
