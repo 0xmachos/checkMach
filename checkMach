@@ -34,7 +34,6 @@ function usage {
 
 ### Utility Functions ###
 # macos_compatability_check
-# check_developer_tools
 
 
 function macos_compatability_check {
@@ -48,15 +47,6 @@ function macos_compatability_check {
   fi
 }
 
-
-function check_developer_tools {
-
-  if ! xcode-select -p >/dev/null 2>&1; then 
-    echo "[❌] Command line developer tools required"
-    echo "[🍺] Install via: xcode-select --install"
-    exit 1
-  fi
-}
 
 ### END UTILITY FUNCTIONS ###
 
