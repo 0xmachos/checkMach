@@ -34,7 +34,8 @@ function usage {
 
 ### Utility Functions ###
 # macos_compatability_check
-
+# get_codesign_flags
+# get_codesign_bitmask
 
 function macos_compatability_check {
   
@@ -45,6 +46,33 @@ function macos_compatability_check {
     echo "[❌] This script was written for macOS"
     exit 1
   fi
+}
+
+
+function get_codesign_flags {
+  # get_codesign_flags
+  #   Executes codesign on a binary
+  #   Parses comma seperated list of flags into an array
+  local -r binary_path=${1:?No parameters passed to get_codesign_flags}
+  local codesign_flags
+  # declare -a flags
+
+  codesign_flags=$(codesign --display --verbose "${binary_path}" 2>&1 \
+          | awk 'FNR == 4 {print $4}' \
+          | awk -F '[(|)]' '{print $2}')
+  
+  local IFS=,
+  # Set IFS to comma (,)
+  read -ra flags <<< "${codesign_flags}"
+  # Reads contents of $codesign_flags into array $flags
+}
+
+
+function get_codesign_bitmask {
+
+  bitmask=$(codesign --display --verbose "${binary_path}" 2>&1 \
+          | awk 'FNR == 4 {print $4}' \
+          | awk -F '[=|(]' '{print $2}')
 }
 
 
@@ -70,6 +98,8 @@ function main {
   # Check the system is running macOS 
 
   local -r binary_path=${1:-"usage"}
+  declare -a flags
+  declare bitmask
 
   trap ctrl_c SIGINT
   # Detect and react to the user hitting CTRL + C
