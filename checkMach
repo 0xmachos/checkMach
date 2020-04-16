@@ -69,16 +69,16 @@ function main {
   macos_compatability_check
   # Check the system is running macOS 
 
-  declare -r arg=${1:-"usage"}
+  local -r binary_path=${1:-"usage"}
 
   trap ctrl_c SIGINT
   # Detect and react to the user hitting CTRL + C
 
-  if [[ "${arg}" == "usage" ]]; then
+  if [[ "${binary_path}" == "usage" ]]; then
     usage
   fi
 
-  check_aslr "${arg}"
+  check_aslr "${binary_path}"
 }
 
 main "$@"
