@@ -76,6 +76,7 @@ function get_codesign_bitmask {
   bitmask=$(codesign --display --verbose "${binary_path}" 2>&1 \
           | awk 'FNR == 4 {print $4}' \
           | awk -F '[=|(]' '{print $2}')
+  # Use characters between =( as IFS, print column 2
 }
 
 
