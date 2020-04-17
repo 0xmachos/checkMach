@@ -36,6 +36,7 @@ function usage {
 # macos_compatability_check
 # get_codesign_flags
 # get_codesign_bitmask
+# check_is_file
 
 function macos_compatability_check {
   
@@ -82,6 +83,17 @@ function get_codesign_bitmask {
 }
 
 
+function check_is_file {
+
+  local -r alleged_file_path=${1:?No parameters passed to alleged_file_path}
+
+  if [[ ! -f "${alleged_file_path}" ]]; then 
+    /bin/echo "[❌] ${alleged_file_path} is not a file"
+    return 1
+  fi
+}
+
+
 ### END UTILITY FUNCTIONS ###
 
 
@@ -114,6 +126,7 @@ function main {
     usage
   fi
 
+  check_is_file "${binary_path}"
 }
 
 main "$@"
