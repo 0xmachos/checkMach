@@ -16,17 +16,17 @@ IFS=$'\n\t'
 # See: http://redsymbol.net/articles/unofficial-bash-strict-mode/
 
 ### Define Colours ###
-tput sgr0; 
+/usr/bin/tput sgr0; 
 # reset colors
-readonly RESET=$(tput sgr0);
-readonly BOLD=$(tput bold);
-readonly RED=$(tput setaf 1);
+readonly RESET=$(/usr/bin/tput sgr0);
+readonly BOLD=$(/usr/bin/tput bold);
+readonly RED=$(/usr/bin/tput setaf 1);
 ### END Colours ###
 
 function usage {
 
-  echo -e "\\nCheck the security properties of a Mach-O executable\\n"
-  echo -e "  Usage: ./checkMach /path/to/macho/binary\\n"
+  /bin/echo -e "\\nCheck the security properties of a Mach-O executable\\n"
+  /bin/echo -e "  Usage: ./checkMach /path/to/macho/binary\\n"
 
   exit 0
 }
@@ -43,7 +43,7 @@ function macos_compatability_check {
   os="$(uname -s)"
 
   if [[ "${os}" != "Darwin" ]]; then 
-    echo "[❌] This script was written for macOS"
+    /bin/echo "[❌] This script was written for macOS"
     exit 1
   fi
 }
@@ -57,9 +57,9 @@ function get_codesign_flags {
   local codesign_flags
   # declare -a flags
 
-  codesign_flags=$(codesign --display --verbose "${binary_path}" 2>&1 \
-          | awk 'FNR == 4 {print $4}' \
-          | awk -F '[(|)]' '{print $2}')
+  codesign_flags=$(/usr/bin/codesign --display --verbose "${binary_path}" 2>&1 \
+          | /usr/bin/awk 'FNR == 4 {print $4}' \
+          | /usr/bin/awk -F '[(|)]' '{print $2}')
     # codesign prints to stderr; redirect stderr to stdout 
     # Select line 4, print 4th column of 4th line
     # Use characters between () as IFS, print column 2
@@ -73,9 +73,11 @@ function get_codesign_flags {
 
 function get_codesign_bitmask {
 
-  bitmask=$(codesign --display --verbose "${binary_path}" 2>&1 \
-          | awk 'FNR == 4 {print $4}' \
-          | awk -F '[=|(]' '{print $2}')
+  local -r binary_path=${1:?No parameters passed to get_codesign_bitmask}
+
+  bitmask=$(/usr/bin/codesign --display --verbose "${binary_path}" 2>&1 \
+          | /usr/bin/awk 'FNR == 4 {print $4}' \
+          | /usr/bin/awk -F '[=|(]' '{print $2}')
   # Use characters between =( as IFS, print column 2
 }
 
@@ -85,10 +87,10 @@ function get_codesign_bitmask {
 
 function check_aslr {
 
-  if /usr/bin/otool -hv "${1}" | grep -q 'PIE'; then
-    echo "ASLR/ PIE: ✅"
+  if /usr/bin/otool -hv "${1}" | /usr/bin/grep -q 'PIE'; then
+    /bin/echo "ASLR/ PIE: ✅"
   else
-    echo "ASLR/ PIE: ❌"
+    /bin/echo "ASLR/ PIE: ❌"
   fi
 }
 
