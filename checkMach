@@ -60,6 +60,9 @@ function get_codesign_flags {
   codesign_flags=$(codesign --display --verbose "${binary_path}" 2>&1 \
           | awk 'FNR == 4 {print $4}' \
           | awk -F '[(|)]' '{print $2}')
+    # codesign prints to stderr; redirect stderr to stdout 
+    # Select line 4, print 4th column of 4th line
+    # Use characters between () as IFS, print column 2
   
   local IFS=,
   # Set IFS to comma (,)
