@@ -37,6 +37,8 @@ function usage {
 # get_codesign_flags
 # get_codesign_bitmask
 # check_is_file
+# check_is_macho
+
 
 function macos_compatability_check {
   
@@ -94,6 +96,17 @@ function check_is_file {
 }
 
 
+function check_is_macho {
+
+  local -r alleged_macho_path=${1:?No parameters passed to check_is_macho}
+
+  if ! /usr/bin/file "${alleged_macho_path}" | /usr/bin/grep -q 'Mach-O'; then
+    /bin/echo "[❌] ${alleged_macho_path} is not a Mach-O"
+    return 1
+  fi
+}
+
+
 ### END UTILITY FUNCTIONS ###
 
 
@@ -127,6 +140,7 @@ function main {
   fi
 
   check_is_file "${binary_path}"
+  check_is_macho "${binary_path}"
 }
 
 main "$@"
