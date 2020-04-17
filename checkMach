@@ -41,7 +41,7 @@ function usage {
 function macos_compatability_check {
   
   local os
-  os="$(uname -s)"
+  os="$(/usr/bin/uname -s)"
 
   if [[ "${os}" != "Darwin" ]]; then 
     /bin/echo "[❌] This script was written for macOS"
