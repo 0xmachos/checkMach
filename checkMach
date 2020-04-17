@@ -114,7 +114,6 @@ function main {
     usage
   fi
 
-  check_aslr "${binary_path}"
 }
 
 main "$@"
