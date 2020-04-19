@@ -75,12 +75,16 @@ function get_codesign_flags {
 
 
 function get_codesign_bitmask {
-
+  # get_codesign_bitmask
+  #   Executes codesign on a binary
+  #   Extract flags bitmask value from CodeDirectory line
   local -r binary_path=${1:?No parameters passed to get_codesign_bitmask}
 
   bitmask=$(/usr/bin/codesign --display --verbose "${binary_path}" 2>&1 \
           | /usr/bin/awk 'FNR == 4 {print $4}' \
           | /usr/bin/awk -F '[=|(]' '{print $2}')
+  # codesign prints to stderr; redirect stderr to stdout
+  # Select line 4, print 2nd column of 4th line
   # Use characters between =( as IFS, print column 2
 }
 
@@ -119,6 +123,10 @@ function check_aslr {
   fi
 }
 
+# - permissions
+# - executable?
+#   - who can exec it 
+# AGAINST - permissions arent a binary security mesuare not aligend witrh checksec
 
 ############################ 
 
@@ -128,7 +136,7 @@ function main {
   macos_compatability_check
   # Check the system is running macOS 
 
-  local -r binary_path=${1:-"usage"}
+  declare -r binary_path=${1:-"usage"}
   declare -a flags
   declare bitmask
 
