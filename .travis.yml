@@ -3,3 +3,5 @@
 language: bash
 script:
   - shellcheck -s bash checkMach
+notifications:
+  email: false
