@@ -104,6 +104,9 @@ function check_is_file {
 
 
 function check_is_macho {
+  # check_is_macho
+  #   Check if the supplied path ($unsafe_user_path)
+  #   is a mach-o file 
 
   local -r unsafe_user_path=${1:?No parameters passed to check_is_macho}
 
