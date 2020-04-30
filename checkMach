@@ -90,6 +90,9 @@ function get_codesign_bitmask {
 
 
 function check_is_file {
+  # check_is_file
+  #   Check if the supplied path ($unsafe_user_path)
+  #   is a regular file not a directory or device file
 
   local -r unsafe_user_path=${1:?No parameters passed to check_is_file}
 
