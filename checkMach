@@ -56,11 +56,11 @@ function get_codesign_flags {
   # get_codesign_flags
   #   Executes codesign on a binary
   #   Parses comma seperated list of flags into an array
-  local -r binary_path=${1:?No parameters passed to get_codesign_flags}
+  local -r unsafe_user_path=${1:?No parameters passed to get_codesign_flags}
   local codesign_flags
   # declare -a flags
 
-  codesign_flags=$(/usr/bin/codesign --display --verbose "${binary_path}" 2>&1 \
+  codesign_flags=$(/usr/bin/codesign --display --verbose "${unsafe_user_path}" 2>&1 \
           | /usr/bin/awk 'FNR == 4 {print $4}' \
           | /usr/bin/awk -F '[(|)]' '{print $2}')
     # codesign prints to stderr; redirect stderr to stdout 
@@ -78,9 +78,9 @@ function get_codesign_bitmask {
   # get_codesign_bitmask
   #   Executes codesign on a binary
   #   Extract flags bitmask value from CodeDirectory line
-  local -r binary_path=${1:?No parameters passed to get_codesign_bitmask}
+  local -r unsafe_user_path=${1:?No parameters passed to get_codesign_bitmask}
 
-  bitmask=$(/usr/bin/codesign --display --verbose "${binary_path}" 2>&1 \
+  bitmask=$(/usr/bin/codesign --display --verbose "${unsafe_user_path}" 2>&1 \
           | /usr/bin/awk 'FNR == 4 {print $4}' \
           | /usr/bin/awk -F '[=|(]' '{print $2}')
   # codesign prints to stderr; redirect stderr to stdout
@@ -91,10 +91,10 @@ function get_codesign_bitmask {
 
 function check_is_file {
 
-  local -r alleged_file_path=${1:?No parameters passed to alleged_file_path}
+  local -r unsafe_user_path=${1:?No parameters passed to check_is_file}
 
-  if [[ ! -f "${alleged_file_path}" ]]; then 
-    /bin/echo "[❌] ${alleged_file_path} is not a file"
+  if [[ ! -f "${unsafe_user_path}" ]]; then 
+    /bin/echo "[❌] ${unsafe_user_path} is not a file"
     return 1
   fi
 }
@@ -102,10 +102,10 @@ function check_is_file {
 
 function check_is_macho {
 
-  local -r alleged_macho_path=${1:?No parameters passed to check_is_macho}
+  local -r unsafe_user_path=${1:?No parameters passed to check_is_macho}
 
-  if ! /usr/bin/file "${alleged_macho_path}" | /usr/bin/grep -q 'Mach-O'; then
-    /bin/echo "[❌] ${alleged_macho_path} is not a Mach-O"
+  if ! /usr/bin/file "${unsafe_user_path}" | /usr/bin/grep -q 'Mach-O'; then
+    /bin/echo "[❌] ${unsafe_user_path} is not a Mach-O"
     return 1
   fi
 }
@@ -136,14 +136,14 @@ function main {
   macos_compatability_check
   # Check the system is running macOS 
 
-  declare -r binary_path=${1:-"usage"}
+  declare -r unsafe_user_path=${1:-"usage"}
   declare -a flags
   declare bitmask
 
   trap ctrl_c SIGINT
   # Detect and react to the user hitting CTRL + C
 
-  if [[ "${binary_path}" == "usage" ]]; then
+  if [[ "${unsafe_user_path}" == "usage" ]]; then
     usage
   fi
 
