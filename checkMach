@@ -56,16 +56,14 @@ function get_codesign_flags {
   # get_codesign_flags
   #   Executes codesign on a binary
   #   Parses comma seperated list of flags into an array
-  local -r unsafe_user_path=${1:?No parameters passed to get_codesign_flags}
   local codesign_flags
-  # declare -a flags
 
-  codesign_flags=$(/usr/bin/codesign --display --verbose "${unsafe_user_path}" 2>&1 \
+  codesign_flags=$(/usr/bin/codesign --display --verbose "${macho_path}" 2>&1 \
           | /usr/bin/awk 'FNR == 4 {print $4}' \
           | /usr/bin/awk -F '[(|)]' '{print $2}')
-    # codesign prints to stderr; redirect stderr to stdout 
-    # Select line 4, print 4th column of 4th line
-    # Use characters between () as IFS, print column 2
+  # codesign prints to stderr; redirect stderr to stdout 
+  # Select line 4, print 4th column of 4th line
+  # Use characters between () as IFS, print column 2
   
   local IFS=,
   # Set IFS to comma (,)
