@@ -123,10 +123,6 @@ function check_aslr {
   fi
 }
 
-# - permissions
-# - executable?
-#   - who can exec it 
-# AGAINST - permissions arent a binary security mesuare not aligend witrh checksec
 
 ############################ 
 
