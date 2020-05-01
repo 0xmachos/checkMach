@@ -143,8 +143,11 @@ function main {
     usage
   fi
 
-  check_is_file "${binary_path}"
-  check_is_macho "${binary_path}"
+  check_is_file
+  check_is_macho
+  declare -gr macho_path=${unsafe_user_path:?}
+  
+  check_aslr
 }
 
 main "$@"
