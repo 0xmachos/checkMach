@@ -122,7 +122,7 @@ function check_is_macho {
 
 function check_aslr {
 
-  if /usr/bin/otool -hv "${1}" | /usr/bin/grep -q 'PIE'; then
+  if /usr/bin/otool -hv "${macho_path}" | /usr/bin/grep -q 'PIE'; then
     echo "ASLR/ PIE: ✅"
   else
     echo "ASLR/ PIE: ❌"
