@@ -25,8 +25,8 @@ readonly RED=$(/usr/bin/tput setaf 1);
 
 function usage {
 
-  /bin/echo -e "\\nCheck the security properties of a Mach-O executable\\n"
-  /bin/echo -e "  Usage: ./checkMach /path/to/macho/binary\\n"
+  echo -e "\\nCheck the security properties of a Mach-O executable\\n"
+  echo -e "  Usage: ./checkMach /path/to/macho/binary\\n"
 
   exit 0
 }
@@ -46,7 +46,7 @@ function macos_compatability_check {
   os="$(/usr/bin/uname -s)"
 
   if [[ "${os}" != "Darwin" ]]; then 
-    /bin/echo "[❌] This script was written for macOS"
+    echo "[❌] This script was written for macOS"
     exit 1
   fi
 }
@@ -97,7 +97,7 @@ function check_is_file {
   local -r unsafe_user_path=${1:?No parameters passed to check_is_file}
 
   if [[ ! -f "${unsafe_user_path}" ]]; then 
-    /bin/echo "[❌] ${unsafe_user_path} is not a file"
+    echo "[❌] ${unsafe_user_path} is not a file"
     return 1
   fi
 }
@@ -111,7 +111,7 @@ function check_is_macho {
   local -r unsafe_user_path=${1:?No parameters passed to check_is_macho}
 
   if ! /usr/bin/file "${unsafe_user_path}" | /usr/bin/grep -q 'Mach-O'; then
-    /bin/echo "[❌] ${unsafe_user_path} is not a Mach-O"
+    echo "[❌] ${unsafe_user_path} is not a Mach-O"
     return 1
   fi
 }
@@ -123,9 +123,9 @@ function check_is_macho {
 function check_aslr {
 
   if /usr/bin/otool -hv "${1}" | /usr/bin/grep -q 'PIE'; then
-    /bin/echo "ASLR/ PIE: ✅"
+    echo "ASLR/ PIE: ✅"
   else
-    /bin/echo "ASLR/ PIE: ❌"
+    echo "ASLR/ PIE: ❌"
   fi
 }
 
