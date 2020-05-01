@@ -145,7 +145,7 @@ function main {
 
   check_is_file
   check_is_macho
-  declare -gr macho_path=${unsafe_user_path:?}
+  declare -r macho_path=${unsafe_user_path:?}
   
   check_aslr
 }
