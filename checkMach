@@ -75,7 +75,9 @@ function get_codesign_flags {
 function get_codesign_bitmask {
   # get_codesign_bitmask
   #   Executes codesign on a binary
-  #   Extract flags bitmask value from CodeDirectory line
+  #   Extract flags bit field value from CodeDirectory line
+  #   Codesigning atribute bit field values defiend in cs_blobs.h
+  
   local -r unsafe_user_path=${1:?No parameters passed to get_codesign_bitmask}
 
   bitmask=$(/usr/bin/codesign --display --verbose "${unsafe_user_path}" 2>&1 \
