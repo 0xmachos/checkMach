@@ -92,8 +92,6 @@ function check_is_file {
   #   Check if the supplied path ($unsafe_user_path)
   #   is a regular file not a directory or device file
 
-  local -r unsafe_user_path=${1:?No parameters passed to check_is_file}
-
   if [[ ! -f "${unsafe_user_path}" ]]; then 
     echo "[❌] ${unsafe_user_path} is not a file"
     return 1
@@ -105,8 +103,6 @@ function check_is_macho {
   # check_is_macho
   #   Check if the supplied path ($unsafe_user_path)
   #   is a mach-o file 
-
-  local -r unsafe_user_path=${1:?No parameters passed to check_is_macho}
 
   if ! /usr/bin/file "${unsafe_user_path}" | /usr/bin/grep -q 'Mach-O'; then
     echo "[❌] ${unsafe_user_path} is not a Mach-O"
