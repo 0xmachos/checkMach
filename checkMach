@@ -35,7 +35,7 @@ function usage {
 ### Utility Functions ###
 # macos_compatability_check
 # get_codesign_flags
-# get_codesign_bitmask
+# get_codesign_bit_field
 # check_is_file
 # check_is_macho
 
@@ -72,13 +72,13 @@ function get_codesign_flags {
 }
 
 
-function get_codesign_bitmask {
-  # get_codesign_bitmask
+function get_codesign_bit_field {
+  # get_codesign_bit_field
   #   Executes codesign on a binary
   #   Extract flags bit field value from CodeDirectory line
   #   Codesigning atribute bit field values defiend in cs_blobs.h
   
-  local -r unsafe_user_path=${1:?No parameters passed to get_codesign_bitmask}
+  local -r unsafe_user_path=${1:?No parameters passed to get_codesign_bit_field}
 
   bitmask=$(/usr/bin/codesign --display --verbose "${unsafe_user_path}" 2>&1 \
           | /usr/bin/awk 'FNR == 4 {print $4}' \
