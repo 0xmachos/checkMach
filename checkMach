@@ -68,7 +68,7 @@ function get_codesign_flags {
   
   local IFS=,
   # Set IFS to comma (,)
-  read -ra flags <<< "${codesign_flags}"
+  read -r flags <<< "${codesign_flags}"
   # Reads contents of $codesign_flags into array $flags
 }
 
