@@ -32,16 +32,16 @@ function usage {
   exit 0
 }
 
-### Declare Signing Attribute Srings ###
+### Declare Signing Attribute Strings ###
 declare -r BANNER=" MACRO                      Bit Field               Flag           cs_blobs.h comment\\n\
 -----------------------------------------------------------------------------------------------"
 declare -r CS_VALID="CS_VALID                    0x00000001               🤷‍♂️             dynamically valid "
 declare -r CS_ADHOC="CS_ADHOC                    0x00000002              adhoc           ad hoc signed"
 declare -r CS_GET_TASK_ALLOW="CS_GET_TASK_ALLOW           0x00000004               🤷‍♂️             has get-task-allow entitlement"
-declare -r CS_INSTALLER="CS_INSTALLER                0x00000008               🤷‍♂️             has get-task-allow entitlement"
-declare -r CS_FORCED_LV="CS_FORCED_LV                0x00000010               🤷‍♂️             has installer entitlement"
-declare -r CS_INVALID_ALLOWED="CS_INVALID_ALLOWED          0x00000020               🤷‍♂️             Library Validation required by Hardened System Policy"
-declare -r CS_HARD="CS_HARD                     0x00000100              hard            (macOS Only)  Page invalidation allowed by task port policy"
+declare -r CS_INSTALLER="CS_INSTALLER                0x00000008               🤷‍♂️             has installer entitlement"
+declare -r CS_FORCED_LV="CS_FORCED_LV                0x00000010               🤷‍♂️             Library Validation required by Hardened System Policy"
+declare -r CS_INVALID_ALLOWED="CS_INVALID_ALLOWED          0x00000020               🤷‍♂️             (macOS Only) Page invalidation allowed by task port policy"
+declare -r CS_HARD="CS_HARD                     0x00000100              hard            don't load invalid pages"
 declare -r CS_KILL="CS_KILL                     0x00000200              kill            kill process if it becomes invalid"
 declare -r CS_CHECK_EXPIRATION="CS_CHECK_EXPIRATION         0x00000400               🤷‍♂️             force expiration checking"
 declare -r CS_RESTRICT="CS_RESTRICT                 0x00000800            restrict          tell dyld to treat restricted"
