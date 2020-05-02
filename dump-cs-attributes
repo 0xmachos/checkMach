@@ -1,0 +1,276 @@
+#!/usr/bin/env zsh
+# checkMach/dump-cs-attributes
+
+# dump-cs-attributes
+#   Dump the code signing attributes MACRO name, bit field and flag(s)
+#   for all Apps identified by system_profiler SPApplicationsDataType
+
+set -euo pipefail
+# -e exit if any command returns non-zero status code
+# -u prevent using undefined variables
+# -o pipefail force pipelines to fail on first non-zero status code
+
+IFS=$'\n\t'
+# Set Internal Field Separator to newlines and tabs
+# This makes bash consider newlines and tabs as separating words
+# See: http://redsymbol.net/articles/unofficial-bash-strict-mode/
+
+### Define Colours ###
+/usr/bin/tput sgr0; 
+# reset colors
+readonly RESET=$(/usr/bin/tput sgr0);
+readonly BOLD=$(/usr/bin/tput bold);
+readonly RED=$(/usr/bin/tput setaf 1);
+### END Colours ###
+
+function usage {
+
+  echo -e "\\nDump the code signing attributes bit field"
+  echo -e "\\nand ascii flags for all Apps in /Applications/"
+  echo -e "  Usage: ./dump-cs-attributes\\n"
+
+  exit 0
+}
+
+### Declare Signing Attribute Srings ###
+declare -r BANNER=" MACRO                      Bit Field               Flag           cs_blobs.h comment\\n\
+-----------------------------------------------------------------------------------------------"
+declare -r CS_VALID="CS_VALID                    0x00000001               🤷‍♂️             dynamically valid "
+declare -r CS_ADHOC="CS_ADHOC                    0x00000002              adhoc           ad hoc signed"
+declare -r CS_GET_TASK_ALLOW="CS_GET_TASK_ALLOW           0x00000004               🤷‍♂️             has get-task-allow entitlement"
+declare -r CS_INSTALLER="CS_INSTALLER                0x00000008               🤷‍♂️             has get-task-allow entitlement"
+declare -r CS_FORCED_LV="CS_FORCED_LV                0x00000010               🤷‍♂️             has installer entitlement"
+declare -r CS_INVALID_ALLOWED="CS_INVALID_ALLOWED          0x00000020               🤷‍♂️             Library Validation required by Hardened System Policy"
+declare -r CS_HARD="CS_HARD                     0x00000100              hard            (macOS Only)  Page invalidation allowed by task port policy"
+declare -r CS_KILL="CS_KILL                     0x00000200              kill            kill process if it becomes invalid"
+declare -r CS_CHECK_EXPIRATION="CS_CHECK_EXPIRATION         0x00000400               🤷‍♂️             force expiration checking"
+declare -r CS_RESTRICT="CS_RESTRICT                 0x00000800            restrict          tell dyld to treat restricted"
+declare -r CS_ENFORCEMENT="CS_ENFORCEMENT              0x00001000               🤷‍♂️             require enforcemen"
+declare -r CS_REQUIRE_LV="CS_REQUIRE_LV               0x00002000           library-validation require library validation"
+declare -r CS_ENTITLEMENTS_VALIDATED="CS_ENTITLEMENTS_VALIDATED   0x00004000               🤷‍♂️             code signature permits restricted entitlements"
+declare -r CS_NVRAM_UNRESTRICTED="CS_NVRAM_UNRESTRICTED       0x00008000               🤷‍♂️             has com.apple.rootless.restricted-nvram-variables.heritable entitlement"
+declare -r CS_RUNTIME="CS_RUNTIME                  0x00001000             runtime          Apply hardened runtime policies"
+### END Signing Attribute Srings ###
+
+function get_app_list {
+  # get_app_list
+  while IFS= read -r app; do
+    apps+=( "$app" )
+  done < <(system_profiler SPApplicationsDataType \
+          | grep 'Location:' \
+          | awk -F ':' '{print $2}' \
+          | sed -e 's/^[ ]*//')
+}
+
+function dump {
+  # dump
+  for app in "${apps[@]}"; do
+    flags=$(/usr/bin/codesign --display --verbose "${app}" 2>&1 \
+            | /usr/bin/awk 'FNR == 4 {print $4}' \
+            | /usr/bin/awk -F '[(|)]' '{print $2}')
+
+    bitmask=$(/usr/bin/codesign --display --verbose "${app}" 2>&1 \
+            | /usr/bin/awk 'FNR == 4 {print $4}' \
+            | /usr/bin/awk -F '[=|(]' '{print $2}')
+
+    echo "$(basename "${app}") ${bitmask} ${flags}"
+  done
+}
+
+
+function print_signing_attributes_chart {
+  # via cs_blobs.h
+  echo -e "${BANNER}"
+  echo "${CS_VALID}"
+  echo "${CS_ADHOC}"
+  echo "${CS_GET_TASK_ALLOW}"
+  echo "${CS_INSTALLER}"
+  echo "${CS_FORCED_LV}"
+  echo "${CS_INVALID_ALLOWED}"
+  echo "${CS_HARD}"
+  echo "${CS_KILL}"
+  echo "${CS_CHECK_EXPIRATION}"
+  echo "${CS_RESTRICT}"
+  echo "${CS_ENFORCEMENT}"
+  echo "${CS_REQUIRE_LV}"
+  echo "${CS_ENTITLEMENTS_VALIDATED}"
+  echo "${CS_NVRAM_UNRESTRICTED}"
+  echo "${CS_RUNTIME}"
+}
+
+function map_macro {
+  # echo "${BANNER}"
+  case "${map_input}" in
+     "CS_VALID")
+        echo "${CS_VALID}"
+        ;;
+      "CS_ADHOC")
+        echo "${CS_ADHOC}"
+        ;;
+      "CS_GET_TASK_ALLOW")
+        echo "${CS_GET_TASK_ALLOW}"
+        ;;
+      "CS_INSTALLER")
+        echo "${CS_INSTALLER}"
+        ;;
+      "CS_FORCED_LV")
+        echo "${CS_FORCED_LV}"
+        ;;
+      "CS_INVALID_ALLOWED")
+        echo "${CS_INVALID_ALLOWED}"
+        ;;
+      "CS_HARD")
+        echo "${CS_HARD}"
+        ;;
+      "CS_KILL")
+        echo "${CS_KILL}"
+        ;;
+      "CS_CHECK_EXPIRATION")
+        echo "${CS_CHECK_EXPIRATION}"
+        ;;
+      "CS_RESTRICT")
+        echo "${CS_RESTRICT}"
+        ;;
+      "CS_ENFORCEMENT")
+        echo "${CS_ENFORCEMENT}"
+        ;;
+      "CS_REQUIRE_LV")
+        echo "${CS_REQUIRE_LV}"
+        ;;
+      "CS_ENTITLEMENTS_VALIDATED")
+        echo "${CS_ENTITLEMENTS_VALIDATED}"
+        ;;
+      "CS_NVRAM_UNRESTRICTED")
+        echo "${CS_NVRAM_UNRESTRICTED}"
+        ;;
+      "CS_RUNTIME")
+        echo "${CS_RUNTIME}"
+        ;;
+      *)
+      echo -e "\\n '${map_input}' is not a valid signing atrribute macro name"
+      exit 1
+      ;;
+  esac
+}
+
+function map_hex {
+  case "${map_input}" in
+     "0x00000001")
+        echo "${CS_VALID}"
+        ;;
+      "0x00000002")
+        echo "${CS_ADHOC}"
+        ;;
+      "0x00000004")
+        echo "${CS_GET_TASK_ALLOW}"
+        ;;
+      "0x00000008")
+        echo "${CS_INSTALLER}"
+        ;;
+      "0x00000010")
+        echo "${CS_FORCED_LV}"
+        ;;
+      "0x00000020")
+        echo "${CS_INVALID_ALLOWED}"
+        ;;
+      "0x00000100")
+        echo "${CS_HARD}"
+        ;;
+      "0x00000200")
+        echo "${CS_KILL}"
+        ;;
+      "0x00000400")
+        echo "${CS_CHECK_EXPIRATION}"
+        ;;
+      "0x00000800")
+        echo "${CS_RESTRICT}"
+        ;;
+      "0x00001000")
+        echo "${CS_ENFORCEMENT}"
+        ;;
+      "0x00002000")
+        echo "${CS_REQUIRE_LV}"
+        ;;
+      "0x00004000")
+        echo "${CS_ENTITLEMENTS_VALIDATED}"
+        ;;
+      "0x00008000")
+        echo "${CS_NVRAM_UNRESTRICTED}"
+        ;;
+      "0x00010000")
+        echo "${CS_RUNTIME}"
+        ;;
+      *)
+      echo -e "\\n '${map_input}' is not a valid signing atrribute bit field"
+      exit 1
+      ;;
+  esac
+}
+
+function map_flag {
+  case "${map_input}" in
+      "adhoc")
+        echo "${CS_ADHOC}"
+        ;;
+      "hard")
+        echo "${CS_HARD}"
+        ;;
+      "kill")
+        echo "${CS_KILL}"
+        ;;
+      "restrict")
+        echo "${CS_RESTRICT}"
+        ;;
+      "library-validation")
+        echo "${CS_REQUIRE_LV}"
+        ;;
+      "runtime")
+        echo "${CS_RUNTIME}"
+        ;;
+      *)
+      echo -e "\\n Unknown flag. https://github.com/0xmachos/checkMach/issues/new"
+      exit 1
+      ;;
+  esac
+}
+
+
+function map_signing_attributes {
+
+  if [[ "${map_input}"   =~ ^[A-Z_]+$ ]]; then
+    # Only upper case and underscore (_)
+    map_macro
+  elif [[ "${map_input}" =~ ^[0x] ]]; then
+    # '0x' at start of string
+    map_hex
+  elif [[ "${map_input}" =~ ^[a-z-]+$ ]]; then
+    # Only lower case and dash (-) 
+    map_flag
+  else
+    echo "bad input; fucked it"
+    exit 1
+  fi
+
+}
+
+
+function main {
+  declare -r arg=${1:-""}
+  declare -r map_input=${2:-"***"}
+  declare -a apps
+  
+  if [[ "${arg}" =~ ^(usage|help|-h|--help)$ ]]; then
+    usage
+  elif [[ "${arg}" =~  ^(p|-p|--print|print)$ ]]; then
+    print_signing_attributes_chart
+    exit 0
+  elif [[ "${arg}" =~ ^(m|-m|--map|map)$ ]]; then
+    map_signing_attributes
+    exit 0
+  fi
+
+  get_app_list
+  dump
+}
+
+main "$@"
