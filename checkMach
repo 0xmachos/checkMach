@@ -56,6 +56,7 @@ function get_codesign_flags {
   # get_codesign_flags
   #   Executes codesign on a binary
   #   Parses comma seperated list of flags into an array
+  #   Codesigning flags defiend in cs_blobs.h
   local codesign_flags
 
   codesign_flags=$(/usr/bin/codesign --display --verbose "${macho_path}" 2>&1 \
