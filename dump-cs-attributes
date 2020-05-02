@@ -33,7 +33,7 @@ function usage {
 }
 
 ### Declare Signing Attribute Strings ###
-declare -r BANNER=" MACRO                      Bit Field               Flag           cs_blobs.h comment\\n\
+declare -r BANNER=" MACRO                      Bit Field               Flag            cs_blobs.h comment\\n\
 -----------------------------------------------------------------------------------------------"
 declare -r CS_VALID="CS_VALID                    0x00000001               🤷‍♂️             dynamically valid "
 declare -r CS_ADHOC="CS_ADHOC                    0x00000002              adhoc           ad hoc signed"
