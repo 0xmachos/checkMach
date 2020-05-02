@@ -125,6 +125,10 @@ function check_aslr {
   fi
 }
 
+function check_code_signing_attributes {
+  :
+}
+
 
 ############################ 
 
@@ -151,6 +155,7 @@ function main {
   get_codesign_flags
   
   check_aslr
+  check_code_signing_attributes
 }
 
 main "$@"
